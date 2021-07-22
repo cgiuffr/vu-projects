@@ -1,4 +1,5 @@
 import os
+import logging
 
 #
 # Example record for report file formatting:
@@ -13,3 +14,11 @@ reports_url = 'https://api.vuweb.vu.nl/api/projectdetails/reports/'
 storage_dir = os.path.join(os.getcwd(), 'output')
 storage_dir_cleanup = True
 report_file = '{ProjectId} - {ProjectDescription}.xlsm'
+report_zip_file = 'Projects_{username}_{date_sec}.zip'
+log_level = logging.INFO
+
+upload_hostname = '<your_hostname_here>' # or None for no remote upload
+upload_ssh_port = 22
+upload_username = username
+upload_password = password
+upload_hostdir  = '<your_hostdir_here>'
