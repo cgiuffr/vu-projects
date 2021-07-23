@@ -15,6 +15,7 @@ import uuid
 import zipfile
 import logging
 import traceback
+import getpass
 import paramiko
 
 try:
@@ -39,6 +40,17 @@ class VUPSpider(scrapy.Spider):
         crawler.signals.connect(spider.spider_closed,
                                 signal=signals.spider_closed)
         spider.logger.setLevel(params.log_level)
+        try:
+            if params.password == '{prompt}':
+                params.password = getpass.getpass(
+                    prompt='Enter your password: ')
+            if params.upload_password == '{prompt}':
+                params.upload_password = getpass.getpass(
+                    prompt='Enter your upload_password: ')
+            elif params.upload_password == '{password}':
+                params.upload_password = params.password
+        except Exception as error:
+            spider.logger.error(error)
         return spider
 
     def parse(self, response):
