@@ -4,7 +4,7 @@ Download overview of financial projects from the VU website.
 
 Dependencies:
 * Python 3.6+.
-* Scrapy, installation instructions: https://docs.scrapy.org/en/latest/intro/install.html.
+* Selenium, installation instructions: https://selenium-python.readthedocs.io/installation.html.
 * Paramiko, installation instructions: https://www.paramiko.org/installing.html.
 
 Usage:

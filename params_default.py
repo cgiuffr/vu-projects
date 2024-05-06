@@ -1,23 +1,23 @@
 import os
 import logging
 
-#
-# Example record for report file formatting:
-# {"Guid":"5A5D41DBFFA00A20E100800091640C0F","ProjectId":"R/003633","ProjectDescription":"REACT - Giuffrida"}
-
 username = '<your_vunet-id_here>'
 password = '{prompt}' # or <your_password_here>
 
-projects_url = 'https://api.vuweb.vu.nl/api/projectdetails/projects/'
-reports_url = 'https://api.vuweb.vu.nl/api/projectdetails/reports/'
+projects_url = 'https://stichting-vu.eu10.hanacloudservices.cloud.sap/sap/fpa/ui/app.html#/story2&/s2/60D8AD07B4DA7E8892E7E75B5F977C49/?mode=view'
 
 storage_dir = os.path.join(os.getcwd(), 'output')
 storage_dir_cleanup = True
-report_file = '{ProjectId} - {ProjectDescription}.xlsm'
-report_zip_file = 'Projects_{username}_{date_sec}.zip'
+report_zip_file = 'Projects_{username}_{date_sec}.zip' # or None (no .zip)
+project_file = '{ProjectId} - Overview - {ProjectDescription}.csv' # or None (no project overviews)
+personnel_file = '{ProjectId} - Personnel.csv' # or None (no personnel overviews)
+expenses_file = '{ProjectId} - Expenses.csv' # or None (no expenses overviews)
+force_per_project_reports = False
+csv_delimiter = ',' # or ';', '\t', ' ', '.', ':', '-'
 log_level = logging.INFO
+wait_secs = 30
 
-upload_hostname = '<your_hostname_here>' # or None for no remote upload
+upload_hostname = '<your_hostname_here>' # or None (no remote upload)
 upload_ssh_port = 22
 upload_username = username
 upload_password = '{password}' # or {prompt} or <your_password_here>
