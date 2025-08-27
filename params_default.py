@@ -13,6 +13,7 @@ project_file = '{ProjectId} - Overview - {ProjectDescription}.csv' # or None (no
 personnel_file = '{ProjectId} - Personnel.csv' # or None (no personnel overviews)
 expenses_file = '{ProjectId} - Expenses.csv' # or None (no expenses overviews)
 force_per_project_reports = False
+skip_closed_projects = True
 csv_delimiter = ',' # or ';', '\t', ' ', '.', ':', '-'
 log_level = logging.INFO
 wait_secs = 30

@@ -128,7 +128,7 @@ class VUPSpider:
         self.wait_for_element(home_element, wait=wait)
 
     def init_home_page(self):
-        fpo_ready = '//span[@title="FPO"]'
+        personeel_ready = '//span[@title="Personeel"]'
         date_button = '//div[text()="Datum ( Verplicht)"]'
 
         # Select default date (today) and go out of focus
@@ -137,7 +137,7 @@ class VUPSpider:
         self.click_element(date_button)
 
         # Wait for FPO button to show up
-        self.wait_for_element(fpo_ready, wait=60, clickable=True)
+        self.wait_for_element(personeel_ready, wait=60)
 
     def refresh_home_page(self):
         self.driver.refresh()
@@ -148,24 +148,34 @@ class VUPSpider:
         project_cell = '//span[starts-with(text(), "R/0")][1]/ancestor::div[contains(@class, "tableDivTable")][1]//div[@data-tablecol="{column}"]//span'
         project_id_cell = project_cell.format(column='0')
         project_desc_cell = project_cell.format(column='1')
+        project_status_cell = project_cell.format(column='5')
 
         while True:
             project_ids = self.wait_for_element(project_id_cell, multi=True)
             project_descs = self.wait_for_element(
                 project_desc_cell, multi=True)
+            project_statuses = self.wait_for_element(
+                project_status_cell, multi=True)
 
             project_ids = [e.text for e in project_ids if len(e.text) > 0]
             project_descs = [e.text for e in project_descs if len(e.text) > 0]
-            if len(project_ids) > 0 and len(project_ids) == len(project_descs):
+            project_statuses = [e.text for e in project_statuses if len(e.text) > 0]
+
+            ids = []
+            descs = []
+            if len(project_ids) > 0 and len(project_ids) == len(project_descs) == len(project_statuses):
                 self.logger.info("Found projects:")
-                for id, desc in zip(project_ids, project_descs):
-                    print(f" - {id}: {desc}")
+                for id, desc, status in zip(project_ids, project_descs, project_statuses):
+                    print(f" - {id}: {desc} ({status})")
+                    if not params.skip_closed_projects or status.lower() != 'afgesloten':
+                        ids.append(id)
+                        descs.append(desc)
                 break
             else:
                 self.logger.warning("No projects found, trying again...")
                 time.sleep(1)
 
-        return project_ids, project_descs
+        return ids, descs
 
     def select_project(self, id):
         search_input = '//input[starts-with(@placeholder, "Knip en plak project nummer")]'
@@ -255,7 +265,8 @@ class VUPSpider:
             return
         self.click_element(tab_button)
         self.wait_for_element(table_leftmost_cell, clickable=True)
-        self.scroll_left_element(scrollable)
+        if scrollable:
+            self.scroll_left_element(scrollable)
         self.click_element(table_rightmost_cell)
 
         csv = self.export_report()
@@ -339,8 +350,8 @@ class VUPSpider:
     def download_project_overview(self, project_id, project_desc):
         tab_button = '//div[text()="FPO gegevens"]/ancestor::button[1]'
         table_leftmost_cell = '//span[starts-with(text(),"Contractbedrag")]'
-        table_rightmost_cell = '//span[starts-with(text(),"Delta Contract Begroting")]'
-        scrollable = '//div[starts-with(@class,"scrollbarContainer horizontal")][1]'
+        table_rightmost_cell = table_leftmost_cell
+        scrollable = None
 
         self.download_report(project_id, project_desc, 'project', params.project_file,
                              tab_button, table_leftmost_cell, table_rightmost_cell, scrollable)
