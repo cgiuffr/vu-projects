@@ -128,19 +128,16 @@ class VUPSpider:
         self.wait_for_element(home_element, wait=wait)
 
     def init_home_page(self):
-        fpo_ready_button = '//div[@class="highcharts-container"][1]'
-        fpo_ready_alt = '//span[text()="FPO overzicht"]'
         fpo_ready = '//span[@title="FPO"]'
+        date_button = '//div[text()="Datum ( Verplicht)"]'
 
-        # Need to click here a few times for the FPO top button to show up...
-        self.click_element(fpo_ready_button)
-        while True:
-            try:
-                self.wait_for_element(fpo_ready, wait=1, clickable=True)
-                break
-            except:
-                self.click_element(fpo_ready_alt)  # just to change focus
-                self.click_element(fpo_ready_button)
+        # Select default date (today) and go out of focus
+        self.click_element(date_button)
+        time.sleep(1)
+        self.click_element(date_button)
+
+        # Wait for FPO button to show up
+        self.wait_for_element(fpo_ready, wait=60, clickable=True)
 
     def refresh_home_page(self):
         self.driver.refresh()
@@ -183,10 +180,10 @@ class VUPSpider:
         self.wait_for_element(reset_button, clickable=True)
 
     def export_report(self):
-        more_button = '//span[@title="More Actions"]'
-        export_button = '//li[@title="Export"]'
-        scope_select = '//div[text()="Point of view"]/ancestor::div[1]'
-        delimiter_select = '//div[text()="Comma ,"]/ancestor::div[1]'
+        more_button = '//span[@title="Meer acties"]'
+        export_button = '//li[@title="Exporteren"]'
+        scope_select = '//label[text()="Scope"]/following::div[starts-with(@id,"__select")][1]'
+        delimiter_select = '//div[text()="Komma ,"]/ancestor::div[1]'
         delimiter_opts = [',', ';', '\t', ' ', '.', ':', '-']
         export_ok_button = '//bdi[text()="OK"]/ancestor::button[1]'
 
@@ -322,8 +319,8 @@ class VUPSpider:
             self.upload(self.zip_obj.filename)
 
     def download_expenses_overview(self, project_id, project_desc):
-        tab_button = '//span[@title="Boekingsregels"]'
-        table_leftmost_cell = '//span[starts-with(text(),"WBS-element")]'
+        tab_button = '//span[@title="Kosten & batenoverzicht"]'
+        table_leftmost_cell = '//span[starts-with(text(),"PCS Categorie")]'
         table_rightmost_cell = '//span[starts-with(text(),"Gealloceerde FTE")]'
         scrollable = '//span[starts-with(text(),"Gealloceerde FTE")]/ancestor::div[starts-with(@id, "__container")][1]'
 
@@ -333,8 +330,8 @@ class VUPSpider:
     def download_personnel_overview(self, project_id, project_desc):
         tab_button = '//span[@title="Personeel"]'
         table_leftmost_cell = '//span[starts-with(text(),"WBS-element")]'
-        table_rightmost_cell = '//span[starts-with(text(),"Nog te besteden")]'
-        scrollable = '//div[starts-with(@class,"scrollbarContainer horizontal")][1]'
+        table_rightmost_cell = '//span[starts-with(text(),"Te verwachten kosten")]'
+        scrollable = '//span[starts-with(text(),"Te verwachten kosten")]/ancestor::div[starts-with(@id, "__container")][1]'
 
         self.download_report(project_id, project_desc, 'personnel', params.personnel_file,
                              tab_button, table_leftmost_cell, table_rightmost_cell, scrollable)
